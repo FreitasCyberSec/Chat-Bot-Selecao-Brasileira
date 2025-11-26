@@ -1,106 +1,91 @@
-🇧🇷 Arena CBF - Chatbot Inteligente da Seleção
-Um assistente virtual especialista na história da Seleção Brasileira de Futebol, construído com arquitetura RAG (Retrieval-Augmented Generation) para garantir respostas precisas, livres de alucinações e baseadas em dados históricos reais.
+Chatbot RAG - Histórico da Seleção Brasileira
+Este repositório contém a implementação de um assistente virtual baseado em Inteligência Artificial Generativa, utilizando a arquitetura RAG (Retrieval-Augmented Generation). O sistema foi projetado para responder a consultas em linguagem natural sobre a história, estatísticas e dados técnicos da Seleção Brasileira de Futebol, garantindo precisão factual através de uma base de conhecimento vetorial curada.
 
- Sobre o Projeto
-Este projeto é uma aplicação Fullstack que utiliza Inteligência Artificial para responder perguntas sobre a Seleção Brasileira. Diferente de chats comuns (como o ChatGPT puro), este bot utiliza uma Base de Conhecimento Curada (Vector Database) contendo registros de mais de 1.000 partidas, perfis de jogadores, táticas históricas e curiosidades culturais.
+Visão Geral do Projeto
+O objetivo principal deste software é demonstrar a aplicação de modelos de linguagem (LLMs) em domínios de conhecimento fechados, mitigando o problema de alucinação comum em modelos generativos. O sistema não depende apenas do conhecimento pré-treinado do modelo, mas consulta uma base de dados vetorial local antes de formular qualquer resposta.
 
-O sistema foi projetado para atuar como uma enciclopédia interativa, cobrindo desde o primeiro jogo em 1914 até o ciclo da Copa de 2026.
+Principais Características
+Arquitetura RAG: Integração de recuperação de informação (Information Retrieval) com geração de texto.
 
- Funcionalidades Principais
- Inteligência Híbrida: Utiliza Embeddings Locais (HuggingFace) para busca semântica rápida e gratuita, e Google Gemini 2.0 para geração de respostas naturais.
+Processamento Local (Edge AI): Utilização de modelos de Embeddings open-source (HuggingFace) executados localmente na CPU, eliminando custos de tokenização na indexação.
 
- Sistema Anti-Alucinação: Configurado com temperatura zero e prompts restritivos para responder apenas com base nos dados oficiais, garantindo precisão histórica.
+Interface de API REST: Backend desenvolvido em FastAPI para comunicação assíncrona e escalável.
 
- Base de Dados Massiva: Contém registros detalhados de todos os jogos, fichas técnicas de lendas (Pelé, Garrincha, Marta), táticas de Copas e folclore do futebol.
+Base de Dados Vetorial: Implementação do ChromaDB para persistência e busca semântica de alta performance.
 
- Interface Imersiva: Frontend temático ("Arena Virtual") com identidade visual da CBF, responsivo e com feedback visual de carregamento.
+LLM de Última Geração: Integração com a API do Google Gemini (modelo gemini-2.0-flash) para a camada de raciocínio e síntese.
 
- Tecnologias Utilizadas
-Backend (API & AI)
-Linguagem: Python
+Stack Tecnológica
+Linguagem: Python 3.10+
 
-Framework Web: FastAPI (Servidor Assíncrono)
+Backend Framework: FastAPI / Uvicorn
 
 Orquestração de IA: LangChain
 
-Banco de Dados Vetorial: ChromaDB (Persistência Local)
+Banco de Dados Vetorial: ChromaDB
 
-Embeddings: sentence-transformers/all-MiniLM-L6-v2 (HuggingFace)
+Modelo de Embeddings: sentence-transformers/all-MiniLM-L6-v2
 
-LLM (Modelo de Linguagem): Google gemini-2.0-flash
+Modelo Generativo: Google Gemini 2.0 Flash
 
-Frontend (Interface)
-Linguagens: HTML5, CSS3, JavaScript (Vanilla)
+Frontend: HTML5, CSS3, JavaScript (Vanilla)
 
-Estilização: CSS Customizado com animações e responsividade.
+Estrutura do Projeto
+Plaintext
 
-Comunicação: Fetch API para consumo do endpoint REST.
-
- Estrutura do Projeto
-CHAT_SELECAO/
-│
-├── chroma_db/          # O "Cérebro" (Banco de dados vetorial gerado)
+/
+├── app.py                 # Ponto de entrada da API (Servidor FastAPI)
+├── criar_banco.py         # Script de pipeline ETL (Extração e Vetorização)
 ├── data/
-│   └── base_conhecimento_brasil.csv  # Fonte da Verdade (+1000 registros)
-│
-├── app.py              # Servidor FastAPI (Backend)
-├── criar_banco.py      # Script ETL (Extração e Ingestão de Dados)
-├── index.html          # Interface de Usuário (Frontend)
-├── .env                # Variáveis de Ambiente (API Keys)
-└── README.md           # Documentação
- Como Rodar Localmente
-Siga os passos abaixo para executar o projeto na sua máquina.
+│   └── base_conhecimento_brasil.csv  # Dataset estruturado (Fonte da verdade)
+├── chroma_db/             # Diretório de persistência do banco vetorial
+├── index.html             # Interface de usuário (Cliente Web)
+├── .env                   # Configurações de ambiente e credenciais
+├── .gitignore             # Arquivos ignorados pelo versionamento
+└── README.md              # Documentação técnica
+Instalação e Configuração
+Siga as instruções abaixo para configurar o ambiente de desenvolvimento local.
 
 1. Pré-requisitos
-Python instalado.
+Certifique-se de ter o Python instalado em sua máquina. É recomendada a utilização de um ambiente virtual (venv).
 
-Uma chave de API do Google (Gemini).
-
-2. Instalação das Dependências
-No terminal, instale as bibliotecas necessárias:
+2. Instalação de Dependências
+Execute o comando abaixo no terminal para instalar todas as bibliotecas necessárias:
 
 Bash
 
 pip install fastapi uvicorn python-dotenv langchain langchain-community langchain-huggingface langchain-google-genai chromadb sentence-transformers
-3. Configuração de Ambiente
-Crie um arquivo chamado .env na raiz do projeto e adicione sua chave:
+3. Configuração de Variáveis de Ambiente
+Crie um arquivo nomeado .env na raiz do projeto para armazenar suas credenciais de segurança. O arquivo deve conter a chave da API do Google:
 
 Snippet de código
 
-GOOGLE_API_KEY=SuaChaveAquiSemEspacos
-4. Ingestão de Dados (Criar o Cérebro)
-Execute o script que lê o CSV e cria o banco vetorial. Isso deve ser feito na primeira vez ou sempre que os dados mudarem.
+GOOGLE_API_KEY=SuaChaveDeApiAqui
+4. Inicialização da Base de Conhecimento (ETL)
+Antes de iniciar o servidor, é necessário processar o arquivo CSV e gerar os índices vetoriais. Execute o script de ingestão:
 
 Bash
 
 python criar_banco.py
-(Aguarde a mensagem "✅ SUCESSO TOTAL!")
+Este processo lerá o arquivo data/base_conhecimento_brasil.csv, converterá os dados textuais em vetores numéricos utilizando o modelo all-MiniLM-L6-v2 e salvará o resultado no diretório chroma_db.
 
-5. Iniciar o Servidor
-Suba a API Backend:
+5. Execução do Servidor
+Inicie a aplicação backend:
 
 Bash
 
 python app.py
-(O servidor iniciará em http://0.0.0.0:8000)
+O servidor estará disponível em http://0.0.0.0:8000.
 
-6. Acessar
-Abra o arquivo index.html no seu navegador. Pronto! O bot está operante.
+6. Acesso ao Frontend
+Para interagir com o sistema, abra o arquivo index.html diretamente em qualquer navegador web moderno. O frontend se comunicará automaticamente com a API local.
 
- Detalhes da Engenharia de Dados
-O arquivo base_conhecimento_brasil.csv foi estruturado para cobrir cinco dimensões do conhecimento:
+Detalhes de Implementação
+Pipeline de Recuperação (Retrieval)
+O sistema utiliza um parâmetro k=50 na busca vetorial. Isso significa que, para cada pergunta do usuário, o algoritmo recupera os 50 fragmentos de informação mais relevantes semanticamente do banco de dados antes de enviá-los ao modelo generativo. Isso garante um contexto amplo e reduz drasticamente a possibilidade de respostas incorretas.
 
-Fatos: Resultados exatos de partidas (1914-2025).
+Engenharia de Prompt
+O System Prompt foi configurado com instruções estritas ("System Instructions") para impedir que o modelo utilize conhecimento externo não verificado. O modelo é instruído a declarar explicitamente quando uma informação não consta na base de dados fornecida.
 
-Biografias: Perfis de jogadores e técnicos lendários.
-
-Tática: Evolução dos esquemas (do 4-2-4 de 58 ao 4-3-3 moderno).
-
-Cultura: Músicas de torcida, mascotes, apelidos e frases famosas.
-
-Tabus e Polêmicas: Histórias de bastidores, "maldições" e recordes.
-
- Autor
-Desenvolvido como parte de um projeto acadêmico de Engenharia de Software e Inteligência Artificial.
-
-“Brasil, o país do futebol.” 🇧🇷
+Autores
+Projeto desenvolvido como parte dos requisitos da disciplina de Engenharia de Software e Inteligência Artificial.
